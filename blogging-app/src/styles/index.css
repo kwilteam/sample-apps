@@ -1,0 +1,152 @@
+@font-face {
+    font-family: 'Avenir';
+    src: url(../assets/fonts/Avenir.ttc);
+}
+
+body {
+    background: linear-gradient(0deg, rgba(196, 196, 196, 0.3), rgba(196, 196, 196, 0.3)), radial-gradient(62.11% 204.74% at 13.44% 31.21%, rgba(215, 26, 26, 0.3) 0%, rgba(191, 76, 76, 0.3) 100%), linear-gradient(110.11deg, #084ED6 13.41%, #6E0EEA 73.69%);
+    margin: 0px;
+    padding: 0px;
+    min-width: 730px;
+}
+
+.content-container {
+    display: flex;
+    min-width: 730px;
+}
+
+.side-bar {
+    display: flex;
+    flex-direction: column;
+    width: 193px;
+    height: 100%;
+    min-height: 100vh;
+    background: #000;
+}
+
+.logo {
+    height: 50px;
+    margin: 16px auto 0px auto;
+}
+
+.side-bar > h2 {
+    font-family: 'Avenir';
+    color: #fff;
+    font-weight: 500;
+    font-size: 18px;
+    margin: 16px auto 0px auto;
+}
+
+.blog-menu {
+    margin: 16px auto 0px auto;
+}
+
+.new-blog {
+    margin: 16px auto 0px auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.body-content {
+    width: calc(100% - 193px);
+    display: flex;
+    flex-direction: column;
+}
+
+.head-buttons {
+    display: flex;
+    justify-content: flex-end;
+    max-height: 54px;
+}
+
+.funding-interface {
+    height: auto;
+    width: 145px;
+    background: #D9D9D9;
+    border-radius: 5px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    margin: 14px 22px 0 auto;
+    display: flex;
+    flex-direction: column;
+    z-index: 999;
+    padding-bottom: 5px;
+    position: relative;
+}
+
+.funding-text {
+    font-family: 'Avenir';
+    color: #000;
+    font-weight: 500;
+    font-size: 13px;
+    margin: 7px auto 0px 10px;
+}
+
+.funding-number {
+    font-family: 'Avenir';
+    color: #000;
+    font-weight: 500;
+    font-size: 11px;
+    margin: 0px auto 0px 10px;
+}
+
+.blog-post {
+    width: 523px;
+    height: auto;
+    background: #C1C1C1;
+    border-radius: 10px;  
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    margin: 17px auto 0px auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.blog-post > h3 {
+    font-family: 'Avenir';
+    font-weight: 800;
+    font-size: 18px;
+    color: #000;
+    margin: 18px auto 0px 18px;
+}
+
+.author-block {
+    display: flex;
+    flex-direction: row;
+    margin: 0px auto 0px 18px;
+}
+
+.author-block {
+    display: flex;
+    flex-direction: row;
+    margin: 0px auto 0px 18px;
+}
+
+.blog-body {
+    margin: 0px 18px 0px 18px;
+}
+
+.blog-text {
+    font-family: 'Avenir';
+    font-weight: 500;
+    font-size: 14px;
+    color: #000;
+    margin: 0px;
+}
+
+.edit-buttons {
+    margin: 0px 0px 0px auto;
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    justify-self: flex-end;
+}
+
+.wallet-address {
+    font-family: 'Avenir';
+    font-weight: 500;
+    font-size: 16px;
+    color: #000;
+    margin: 0px;
+    max-width: 116px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
