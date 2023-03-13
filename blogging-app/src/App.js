@@ -5,7 +5,7 @@ import SideBar from "./components/SideBar";
 
 export default function App() {
     const [walletAddress, setWalletAddress] = useState(null)
-    const [currentBlog, setCurrentBlog] = useState(null)
+    const [currentBlog, setCurrentBlog] = useState('test')
 
     return(
         <div className="content-container">

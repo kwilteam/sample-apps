@@ -73,6 +73,7 @@ export default function NewBlog({ walletAddress, menuUpdate, setMenuUpdate }) {
         db.addQuery(updateQuery);
 
         let deleteQuery = db.newQuery("delete_post", postsTable.name, Types.QueryType.DELETE);
+        
         let deleteTitleWhere = deleteQuery.newWhere("where_post_title", titleColumn.name, Types.OperatorType.EQUAL);
         let deleteWalletWhere = deleteQuery.newWhere("where_wallet_address", walletColumn.name, Types.OperatorType.EQUAL);
 
@@ -86,10 +87,10 @@ export default function NewBlog({ walletAddress, menuUpdate, setMenuUpdate }) {
 
         //create roles
         let userRole = db.newRole("user_role");
-        userRole.setDefault(true)
-        userRole.addPermission(insertQuery.name)
-        userRole.addPermission(updateQuery.name)
-        userRole.addPermission(deleteQuery.name)
+        userRole.setDefault(true);
+        userRole.addPermission(insertQuery.name);
+        userRole.addPermission(updateQuery.name);
+        userRole.addPermission(deleteQuery.name);
 
         db.addRole(userRole);
 

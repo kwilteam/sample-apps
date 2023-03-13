@@ -19,7 +19,7 @@ body {
     display: flex;
     flex-direction: column;
     width: 193px;
-    height: 100%;
+    height: auto;
     min-height: 100vh;
     background: #000;
 }

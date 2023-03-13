@@ -17,7 +17,7 @@ export default function FundingInterface({ walletAddress }) {
     const [used, setUsed] = useState(0);
     const wrapperRef = useRef(null);
 
-    async function aproveFunds(provider, amount) {
+    async function approveFunds(provider, amount) {
         const funder = await kwil.getFunder(provider);
         return await funder.approve(parseEther(`${amount}`));
     }
@@ -34,7 +34,7 @@ export default function FundingInterface({ walletAddress }) {
         await window.ethereum.request({ method: 'eth_requestAccounts' })
 
         try {
-            const approve = await aproveFunds(provider.getSigner(), amount);
+            const approve = await approveFunds(provider.getSigner(), amount);
             const hash = approve.hash;
             await blockConfirmations(hash);
             
@@ -55,9 +55,14 @@ export default function FundingInterface({ walletAddress }) {
     }
 
     async function getUsedBalance(provider) {
-        const address = await provider.getSigner().getAddress();
-        const acct = await kwil.getAccount(address);
-        return acct.data.spent
+        try {
+            const address = await provider.getSigner().getAddress();
+            const acct = await kwil.getAccount(address);
+            return acct.data.spent
+        } catch (error) {
+            console.log(error)
+        }
+  
     }
 
     async function setAvailableAndUsed() {
