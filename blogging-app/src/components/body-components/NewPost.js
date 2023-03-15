@@ -10,15 +10,15 @@ export default function NewPost({ walletAddress, currentBlog, newPost, setNewPos
     const [blogContent, setBlogContent] = useState("")
 
     async function createPost(title, content) {
-        const dbi = await kwil.selectDatabase(walletAddress, currentBlog)
-        let query = dbi.getQuery("add_post")
-        query.setInput("id", Utils.UUID.v4())
-        query.setInput("post_title", title)
-        query.setInput("post_content", content)
-        query.setInput("post_timestamp", new Date().toString())
+        const dbi = await kwil.selectDatabase("0xa23742526C48D90fD23b3D66B45C43c7a75df1c6", "blog_dapp");
+        let query = dbi.getQuery("add_post");
+        query.setInput("id", Utils.UUID.v4());
+        query.setInput("blog", currentBlog);
+        query.setInput("post_title", title);
+        query.setInput("post_content", content);
+        query.setInput("post_timestamp", new Date().toString());
         
         const provider = new Web3Provider(window.ethereum);
-        await provider._ready()
         await window.ethereum.request({ method: 'eth_requestAccounts' })
         const signer = provider.getSigner();
 

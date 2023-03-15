@@ -4,7 +4,7 @@ import { DeleteButton, EditButton, SubmitButton } from "../Mui-components/button
 import { BlogContentInput } from "../Mui-components/textFields";
 import { kwil } from "../../webKwil";
 
-export default function PostCard({ post, dbIdentifier, editPost, setEditPost }) {
+export default function PostCard({ post, dbIdentifier, editPost, setEditPost, currentBlog }) {
     const [editMode, setEditMode] = useState(false)
     const [editValue, setEditValue] = useState(post.post_content ? post.post_content : "")
 
@@ -15,8 +15,9 @@ export default function PostCard({ post, dbIdentifier, editPost, setEditPost }) 
 
     async function editBlog(newContent) {
         let query = dbIdentifier.getQuery("update_post")
-        query.setInput("posts_content", newContent)
+        query.setInput("post_content", newContent)
         query.setInput("where_post_title", title)
+        query.setInput("where_blog", currentBlog)
 
         try {
             const provider = new Web3Provider(window.ethereum);
@@ -38,6 +39,7 @@ export default function PostCard({ post, dbIdentifier, editPost, setEditPost }) 
     async function deleteBlog() {
         let query = dbIdentifier.getQuery("delete_post")
         query.setInput("where_post_title", title)
+        query.setInput("where_blog", currentBlog)
 
         try {
             const provider = new Web3Provider(window.ethereum);
@@ -55,8 +57,6 @@ export default function PostCard({ post, dbIdentifier, editPost, setEditPost }) 
             console.log(error)
         }
     }
-
-    console.log(dbIdentifier)
     
     return(
         <div className="blog-post">

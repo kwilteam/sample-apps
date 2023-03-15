@@ -15,19 +15,19 @@ export default function Body({ walletAddress, setWalletAddress, currentBlog }) {
     const [dbIdentifier, setDbIdentifier] = useState(null)
     
     async function getBlogs() {
-        const dbi = (await kwil.selectDatabase(walletAddress, currentBlog))
+        const dbi = await kwil.selectDatabase("0xa23742526C48D90fD23b3D66B45C43c7a75df1c6", "blog_dapp");
         const dbid = dbi.DBID
 
         setDbIdentifier(dbi)
 
         try {
-            const query = await kwil.graphql(`query loadPosts {
-                ${dbid}_posts {
+            const query = await kwil.graphql(`query getPostsByBlog {
+                ${dbid}_posts(where: {blog: {_eq: "${currentBlog}"}}) {
                     post_title,
                     post_content,
                     post_timestamp,
                     wallet_address
-                }}
+            }}   
             `)
             const allPosts = query.data[`${dbid}_posts`]
             setCurrentBlogData(query.data[`${dbid}_posts`])
@@ -67,6 +67,7 @@ export default function Body({ walletAddress, setWalletAddress, currentBlog }) {
                                 editPost={editPost}
                                 setEditPost={setEditPost}
                                 dbIdentifier={dbIdentifier}
+                                currentBlog={currentBlog}
                             />
                         )
                     })}
