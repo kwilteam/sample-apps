@@ -10,9 +10,9 @@ export const CustomSelect = styled(Select)({
     border: "0.5px solid #FCFCFC",
     width: "167px",
     height: "36px",
-})
+});
 
 export const CustomMenuItem = styled(MenuItem)({
     color: "#000",
     fontFamily: "Avenir"
-})
+});

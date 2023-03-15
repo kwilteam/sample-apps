@@ -15,14 +15,14 @@ export default function BlogMenu({ walletAddress, setCurrentBlog, menuUpdate }) 
             }
         }`);
         setBlogs(blogs.data[`${dbid}_blogs`]);
-    }
+    };
 
     useEffect(() => {
         if(walletAddress) {
-            listBlogs()
+            listBlogs();
         }
         
-    }, [walletAddress, menuUpdate])
+    }, [walletAddress, menuUpdate]);
 
     return(
         <div className="blog-menu">
@@ -46,5 +46,5 @@ export default function BlogMenu({ walletAddress, setCurrentBlog, menuUpdate }) 
                 ))}
             </CustomSelect>
         </div>
-    )
-}
+    );
+};

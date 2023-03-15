@@ -8,17 +8,17 @@ import { NewPostButton } from "./Mui-components/buttons";
 
 
 export default function Body({ walletAddress, setWalletAddress, currentBlog }) {
-    const [currentBlogData, setCurrentBlogData] = useState(null)
-    const [newPost, setNewPost] = useState(0)
-    const [editPost, setEditPost] = useState(0)
-    const [newBlog, setNewBlog] = useState(true)
-    const [dbIdentifier, setDbIdentifier] = useState(null)
+    const [currentBlogData, setCurrentBlogData] = useState(null);
+    const [newPost, setNewPost] = useState(0);
+    const [editPost, setEditPost] = useState(0);
+    const [newBlog, setNewBlog] = useState(true);
+    const [dbIdentifier, setDbIdentifier] = useState(null);
     
     async function getBlogs() {
         const dbi = await kwil.selectDatabase("0xa23742526C48D90fD23b3D66B45C43c7a75df1c6", "blog_dapp");
-        const dbid = dbi.DBID
+        const dbid = dbi.DBID;
 
-        setDbIdentifier(dbi)
+        setDbIdentifier(dbi);
 
         try {
             const query = await kwil.graphql(`query getPostsByBlog {
@@ -28,23 +28,19 @@ export default function Body({ walletAddress, setWalletAddress, currentBlog }) {
                     post_timestamp,
                     wallet_address
             }}   
-            `)
-            const allPosts = query.data[`${dbid}_posts`]
-            setCurrentBlogData(query.data[`${dbid}_posts`])
+            `);
+            const allPosts = query.data[`${dbid}_posts`];
+            setCurrentBlogData(query.data[`${dbid}_posts`]);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-        
-    }
+    };
 
     useEffect(() => {
         if(currentBlog) {
-            getBlogs()
-        }
-    }, [currentBlog, newPost, editPost])
-
-    console.log(currentBlogData)
-
+            getBlogs();
+        };
+    }, [currentBlog, newPost, editPost]);
 
     return(
         <div className="body-content">
@@ -69,7 +65,7 @@ export default function Body({ walletAddress, setWalletAddress, currentBlog }) {
                                 dbIdentifier={dbIdentifier}
                                 currentBlog={currentBlog}
                             />
-                        )
+                        );
                     })}
                     {!newBlog ? 
                         <NewPost
@@ -88,5 +84,5 @@ export default function Body({ walletAddress, setWalletAddress, currentBlog }) {
                 </> : null
             }
         </div>
-    )
-}
+    );
+};

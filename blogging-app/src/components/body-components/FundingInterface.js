@@ -30,8 +30,7 @@ export default function FundingInterface({ walletAddress }) {
     async function approveAndDeposit(amount) {
         setLoading(true);
         const provider = new Web3Provider(window.ethereum);
-        await provider._ready()
-        await window.ethereum.request({ method: 'eth_requestAccounts' })
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
 
         try {
             const approve = await approveFunds(provider.getSigner(), amount);
@@ -46,13 +45,13 @@ export default function FundingInterface({ walletAddress }) {
             console.log(error);
             setLoading(false);
         }
-    }
+    };
 
     async function getDepositedBalance(provider) {
         const funder = await kwil.getFunder(provider);
         const address = await provider.getSigner().getAddress();
         return await funder.getDepositedBalance(address);
-    }
+    };
 
     async function getUsedBalance(provider) {
         try {
@@ -62,13 +61,11 @@ export default function FundingInterface({ walletAddress }) {
         } catch (error) {
             console.log(error)
         }
-  
-    }
+    };
 
     async function setAvailableAndUsed() {
         const provider = new Web3Provider(window.ethereum);
-        await provider._ready()
-        await window.ethereum.request({ method: 'eth_requestAccounts' })
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
 
         const used = await getUsedBalance(provider);
         const depositFunds = await getDepositedBalance(provider);
@@ -81,21 +78,21 @@ export default function FundingInterface({ walletAddress }) {
         if(walletAddress) {
             setAvailableAndUsed();
         }
-    }, [walletAddress])
+    }, [walletAddress]);
 
     useEffect(() => {
         function handleClickOutside(e) {
             if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
                 setExpandInterface(false);
             }
-        }
+        };
 
         document.addEventListener("mousedown", handleClickOutside);
 
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [wrapperRef])
+    }, [wrapperRef]);
 
     return(
         <div
@@ -130,5 +127,5 @@ export default function FundingInterface({ walletAddress }) {
             }
             
         </div>
-    )
-}
+    );
+};

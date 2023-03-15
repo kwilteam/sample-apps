@@ -4,8 +4,8 @@ import SideBar from "./components/SideBar";
 
 
 export default function App() {
-    const [walletAddress, setWalletAddress] = useState(null)
-    const [currentBlog, setCurrentBlog] = useState('test')
+    const [walletAddress, setWalletAddress] = useState(null);
+    const [currentBlog, setCurrentBlog] = useState('');
 
     return(
         <div className="content-container">
@@ -19,5 +19,5 @@ export default function App() {
                 currentBlog={currentBlog}
             />
         </div>
-    )
-}
+    );
+};

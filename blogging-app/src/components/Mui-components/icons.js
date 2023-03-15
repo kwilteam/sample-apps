@@ -10,4 +10,4 @@ export const CustomLoader = styled(CircularProgress)({
     maxHeight: "20px",
     maxWidth: "20px",
     margin: "0 6px"
-})
+});

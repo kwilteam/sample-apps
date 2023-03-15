@@ -1,4 +1,4 @@
-import { DBBuilder, Types, Utils } from "kwil";
+import { Utils } from "kwil";
 import { useState } from "react";
 import { NewBlogButton } from "../Mui-components/buttons";
 import { CustomAddIcon } from "../Mui-components/icons";
@@ -10,7 +10,7 @@ export default function NewBlog({ menuUpdate, setMenuUpdate }) {
     const [newBlog, setNewBlog] = useState(false)
     const [blogName, setBlogName] = useState("")
 
-    async function createDatabase(name) {
+    async function createBlog(name) {
         const dbi = await kwil.selectDatabase("0xa23742526C48D90fD23b3D66B45C43c7a75df1c6", "blog_dapp");
         const query = dbi.getQuery('add_blog');
         query.setInput('id', Utils.UUID.v4());
@@ -26,8 +26,8 @@ export default function NewBlog({ menuUpdate, setMenuUpdate }) {
             setNewBlog(false)
             setMenuUpdate(menuUpdate + 1)
         } catch (error) {
-            console.log(error)
-            setNewBlog(false)
+            console.log(error);
+            setNewBlog(false);
         }
     };
 
@@ -47,12 +47,12 @@ export default function NewBlog({ menuUpdate, setMenuUpdate }) {
                         placeholder="Blog Name"
                     />
                     <NewBlogButton
-                        onClick={() => createDatabase(blogName)}
+                        onClick={() => createBlog(blogName)}
                     >
                         Create
                     </NewBlogButton>
                 </>
             }
         </div>
-    )
-}
+    );
+};

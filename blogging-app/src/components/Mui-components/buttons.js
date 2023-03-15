@@ -13,7 +13,7 @@ export const NewBlogButton = styled(Button)({
     height: "35px",
     textTransform: "none",
     margin: "0px auto",
-})
+});
 
 export const FundingButton = styled(Button)({
     minHeight: "40px",
@@ -38,7 +38,7 @@ export const FundingButton = styled(Button)({
     color: "#000",
     textTransform: "none",
     boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-})
+});
 
 export const AddFundsButton = styled(Button)({
     background: "transparent",
@@ -51,7 +51,7 @@ export const AddFundsButton = styled(Button)({
     height: "20px",
     textTransform: "none",
     margin: "0px auto",
-})
+});
 
 export const ConnectButton = styled(Button)({
     height: "40px",
@@ -75,7 +75,7 @@ export const ConnectButton = styled(Button)({
     boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
     textOverflow: "ellipsis",
     overflow: "hidden",
-})
+});
 
 export const NewPostButton = styled(Button)({
     height: "36px",
@@ -109,7 +109,7 @@ export const EditButton = styled(Button)({
         background: "#ED9D28"
     },
     margin: "15px 18px 10px auto"
-})
+});
 
 export const SubmitButton = styled(Button)({
     width: "64px",
@@ -126,7 +126,7 @@ export const SubmitButton = styled(Button)({
         background: "#60AA64"
     },
     margin: "15px 18px 10px auto"
-})
+});
 
 export const DeleteButton = styled(Button)({
     width: "64px",
@@ -143,4 +143,4 @@ export const DeleteButton = styled(Button)({
         background: "#DB584E"
     },
     margin: "15px 18px 10px auto"
-})
+});

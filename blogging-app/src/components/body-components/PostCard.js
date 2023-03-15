@@ -21,7 +21,6 @@ export default function PostCard({ post, dbIdentifier, editPost, setEditPost, cu
 
         try {
             const provider = new Web3Provider(window.ethereum);
-            await provider._ready()
             await window.ethereum.request({ method: 'eth_requestAccounts' })
             const signer = provider.getSigner();
 
@@ -43,7 +42,6 @@ export default function PostCard({ post, dbIdentifier, editPost, setEditPost, cu
 
         try {
             const provider = new Web3Provider(window.ethereum);
-            await provider._ready()
             await window.ethereum.request({ method: 'eth_requestAccounts' })
             const signer = provider.getSigner();
 

@@ -46,7 +46,7 @@ export const AmountInput = styled(TextField)({
         borderBottom: "1px solid rgba(255, 255, 255, 0.42)"
     },
     margin: "0px 15px 10px 15px"
-})
+});
 
 export const BlogTitleInput = styled(TextField)({
     width: "calc(100% - 36px)",
@@ -60,7 +60,7 @@ export const BlogTitleInput = styled(TextField)({
         color: "#000",
         height: "45px"
     },
-})
+});
 
 export const BlogContentInput = styled(TextField)({
     width: "calc(100% - 36px)",
@@ -74,4 +74,4 @@ export const BlogContentInput = styled(TextField)({
         color: "#000",
         height: "45px"
     },
-})
+});
