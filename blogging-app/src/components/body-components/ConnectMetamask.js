@@ -9,7 +9,7 @@ export default function ConnectMetamask({ walletAddress, setWalletAddress }) {
             try {
                 const provider = new BrowserProvider(window.ethereum);
                 const signer = await provider.getSigner();
-                const address = signer.address
+                const address = signer.address;
                 setWalletAddress(address);
             } catch (error) {
                 console.log(error);

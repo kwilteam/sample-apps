@@ -19,11 +19,11 @@ export default function NewBlog({ menuUpdate, setMenuUpdate, blogs }) {
         try {
             const provider = new BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
-            let tx = await action.prepareAction(signer)
+            let tx = await action.prepareAction(signer);
             const res = await kwil.broadcast(tx);
-            console.log(res)
-            setNewBlog(false)
-            setMenuUpdate(menuUpdate + 1)
+            console.log(res);
+            setNewBlog(false);
+            setMenuUpdate(menuUpdate + 1);
         } catch (error) {
             console.log(error);
             setNewBlog(false);

@@ -111,7 +111,6 @@ export default function FundingInterface({ walletAddress }) {
                     }
                 </div>
             }
-            
         </div>
     );
 };

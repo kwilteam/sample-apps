@@ -5,8 +5,8 @@ import { kwil } from "../../webKwil";
 import { BrowserProvider } from "ethers";
 
 export default function PostCard({ post, editPost, setEditPost, currentBlog }) {
-    const [editMode, setEditMode] = useState(false)
-    const [editValue, setEditValue] = useState(post.post_content ? post.post_content : "")
+    const [editMode, setEditMode] = useState(false);
+    const [editValue, setEditValue] = useState(post.post_content ? post.post_content : "");
 
     const title = post.post_title;
     const content = post.post_content;
