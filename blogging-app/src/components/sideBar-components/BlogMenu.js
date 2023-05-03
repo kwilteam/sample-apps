@@ -3,18 +3,21 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { CustomMenuItem, CustomSelect } from "../Mui-components/menus";
 import { kwil } from "../../webKwil";
 
-export default function BlogMenu({ walletAddress, setCurrentBlog, menuUpdate }) {
-    const [blogs, setBlogs] = useState([]);
+export default function BlogMenu({ walletAddress, setCurrentBlog, menuUpdate, blogs, setBlogs }) {
     const [selectedBlog, setSelectedBlog] = useState("");
 
+    function organizeBlogName(input) {
+        let arr = [];
+        for (const i in input) {
+            arr.push(...Object.values(input[i]));
+        }
+        return arr;
+    };
+
     async function listBlogs() {
-        const dbid = (await kwil.selectDatabase("0xa23742526C48D90fD23b3D66B45C43c7a75df1c6", "blog_dapp")).DBID;
-        const blogs = await kwil.graphql(`query loadBlogs {
-            ${dbid}_blogs {
-                blog_name
-            }
-        }`);
-        setBlogs(blogs.data[`${dbid}_blogs`]);
+        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
+        const blogList = await kwil.selectQuery(dbid, "SELECT blog_name FROM blogs");
+        setBlogs(organizeBlogName(blogList.data));
     };
 
     useEffect(() => {
@@ -42,7 +45,7 @@ export default function BlogMenu({ walletAddress, setCurrentBlog, menuUpdate }) 
                     <em>Select</em>
                 </CustomMenuItem>
                 {blogs.length > 0 && blogs.map((blog, index) => (
-                    <CustomMenuItem value={blog.blog_name} key={index}>{blog.blog_name}</CustomMenuItem>
+                    <CustomMenuItem value={blog} key={index}>{blog}</CustomMenuItem>
                 ))}
             </CustomSelect>
         </div>

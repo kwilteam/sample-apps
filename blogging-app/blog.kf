@@ -1,0 +1,40 @@
+database blog_dapp;
+
+table blogs {
+    id int primary notnull,
+    blog_name text notnull
+}
+
+table posts {
+    id int primary notnull,
+    blog text notnull,
+    post_title text notnull minlen(7),
+    post_content text notnull,
+    post_timestamp text notnull,
+    wallet_address text notnull
+}
+
+action add_blog ($id, $name) private {
+    INSERT INTO blogs
+    VALUES ($id, $name)
+}
+
+action add_post ($id, $blog, $title, $content, $timestamp) public {
+    INSERT INTO posts
+    VALUES ($id, $blog, $title, $content, $timestamp, @caller)
+}
+
+action update_post ($content, $title, $blog) public {
+    UPDATE posts
+    SET post_content = $content
+    WHERE post_title = $title
+        AND blog = $blog
+        AND wallet_address = @caller
+}
+
+action delete_post ($title, $blog) public {
+    DELETE FROM posts
+    WHERE post_title = $title
+        AND blog = $blog
+        AND wallet_address = @caller
+}

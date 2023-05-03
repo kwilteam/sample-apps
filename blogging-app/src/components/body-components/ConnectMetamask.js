@@ -1,5 +1,5 @@
-import { ConnectButton } from "../Mui-components/buttons"
-import { ethers } from "ethers"
+import { BrowserProvider } from "ethers";
+import { ConnectButton } from "../Mui-components/buttons";
 
 
 export default function ConnectMetamask({ walletAddress, setWalletAddress }) {
@@ -7,10 +7,9 @@ export default function ConnectMetamask({ walletAddress, setWalletAddress }) {
     async function ConnectMetamask() {
         if(window.ethereum) {
             try {
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const signer = provider.getSigner();
-                const address = await signer.getAddress();
+                const provider = new BrowserProvider(window.ethereum);
+                const signer = await provider.getSigner();
+                const address = signer.address
                 setWalletAddress(address);
             } catch (error) {
                 console.log(error);

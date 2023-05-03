@@ -5,6 +5,7 @@ import NewBlog from "./sideBar-components/NewBlog"
 
 export default function SideBar({ walletAddress, setCurrentBlog }) {
     const [menuUpdate, setMenuUpdate] = useState(0);
+    const [blogs, setBlogs] = useState([]);
 
     return(
         <div className="side-bar">
@@ -14,11 +15,14 @@ export default function SideBar({ walletAddress, setCurrentBlog }) {
                 walletAddress={walletAddress}
                 setCurrentBlog={setCurrentBlog}
                 menuUpdate={menuUpdate}
+                blogs={blogs}
+                setBlogs={setBlogs}
             />
             <NewBlog
                 walletAddress={walletAddress}
                 menuUpdate={menuUpdate}
                 setMenuUpdate={setMenuUpdate}
+                blogs={blogs}
             />
         </div>
     );

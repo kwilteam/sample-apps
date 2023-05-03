@@ -8,32 +8,25 @@ import { NewPostButton } from "./Mui-components/buttons";
 
 
 export default function Body({ walletAddress, setWalletAddress, currentBlog }) {
-    const [currentBlogData, setCurrentBlogData] = useState(null);
+    const [currentBlogData, setCurrentBlogData] = useState([]);
+    const [blogRecords, setBlogRecords] = useState(0);
     const [newPost, setNewPost] = useState(0);
     const [editPost, setEditPost] = useState(0);
     const [newBlog, setNewBlog] = useState(true);
-    const [dbIdentifier, setDbIdentifier] = useState(null);
     
     async function getBlogs() {
-        const dbi = await kwil.selectDatabase("0xa23742526C48D90fD23b3D66B45C43c7a75df1c6", "blog_dapp");
-        const dbid = dbi.DBID;
-
-        setDbIdentifier(dbi);
+        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
 
         try {
-            const query = await kwil.graphql(`query getPostsByBlog {
-                ${dbid}_posts(where: {blog: {_eq: "${currentBlog}"}}) {
-                    post_title,
-                    post_content,
-                    post_timestamp,
-                    wallet_address
-            }}   
-            `);
-            const allPosts = query.data[`${dbid}_posts`];
-            setCurrentBlogData(query.data[`${dbid}_posts`]);
+            const query = await kwil.selectQuery(dbid, 
+                `SELECT post_title, post_content, post_timestamp, wallet_address
+                    FROM posts
+                    WHERE blog = '${currentBlog}' 
+                `);
+            setCurrentBlogData(query.data);
         } catch (error) {
             console.log(error);
-        }
+        };
     };
 
     useEffect(() => {
@@ -41,6 +34,15 @@ export default function Body({ walletAddress, setWalletAddress, currentBlog }) {
             getBlogs();
         };
     }, [currentBlog, newPost, editPost]);
+
+    useEffect(() => {
+        async function getBlogRecords() {
+            const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
+            const query = await kwil.selectQuery(dbid, "SELECT count(*) FROM posts");
+            setBlogRecords(query.data[0]["count(*)"]);
+        }
+        getBlogRecords();
+    }, [newPost]);
 
     return(
         <div className="body-content">
@@ -62,7 +64,6 @@ export default function Body({ walletAddress, setWalletAddress, currentBlog }) {
                                 post={post}
                                 editPost={editPost}
                                 setEditPost={setEditPost}
-                                dbIdentifier={dbIdentifier}
                                 currentBlog={currentBlog}
                             />
                         );
@@ -74,6 +75,7 @@ export default function Body({ walletAddress, setWalletAddress, currentBlog }) {
                             newPost={newPost}
                             setNewPost={setNewPost}
                             setNewBlog={setNewBlog}
+                            blogRecords={blogRecords}
                         /> : 
                         <NewPostButton
                             onClick={() => setNewBlog(false)}

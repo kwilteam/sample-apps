@@ -2,11 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { AddFundsButton, FundingButton } from "../Mui-components/buttons";
 import { AmountInput } from "../Mui-components/textFields";
 import { kwil } from "../../webKwil";
-import { parseEther } from "ethers/lib/utils";
 import { CustomLoader } from "../Mui-components/icons";
-import { Web3Provider } from "@ethersproject/providers";
+import { BrowserProvider } from "ethers";
 import { blockConfirmations } from "../../utils/blockConfirmationsDelay";
-import { roundEther } from "../../utils/formatEther";
+import { convertToBigNumber, weiToToken } from "../../utils/formatEther";
 
 
 export default function FundingInterface({ walletAddress }) {
@@ -14,32 +13,31 @@ export default function FundingInterface({ walletAddress }) {
     const [loading, setLoading] = useState(false);
     const [amount, setAmount] = useState(null);
     const [available, setAvailable] = useState(0);
-    const [used, setUsed] = useState(0);
     const wrapperRef = useRef(null);
 
     async function approveFunds(provider, amount) {
         const funder = await kwil.getFunder(provider);
-        return await funder.approve(parseEther(`${amount}`));
+        return await funder.approve(convertToBigNumber(amount));
     }
 
     async function depositFunds(provider, amount) {
         const funder = await kwil.getFunder(provider);
-        return await funder.deposit(parseEther(`${amount}`));
+        return await funder.deposit(convertToBigNumber(amount));
     }
 
     async function approveAndDeposit(amount) {
         setLoading(true);
-        const provider = new Web3Provider(window.ethereum);
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const provider = new BrowserProvider(window.ethereum);
 
         try {
-            const approve = await approveFunds(provider.getSigner(), amount);
+            console.log(amount)
+            const approve = await approveFunds(await provider.getSigner(), amount);
             const hash = approve.hash;
-            await blockConfirmations(hash);
+            await blockConfirmations(hash, 2);
             
-            const deposit = await depositFunds(provider.getSigner(), amount);
+            const deposit = await depositFunds(await provider.getSigner(), amount);
             const hash2 = deposit.hash;
-            await blockConfirmations(hash2);
+            await blockConfirmations(hash2, 13);
             setLoading(false);
         } catch (error) {
             console.log(error);
@@ -47,36 +45,26 @@ export default function FundingInterface({ walletAddress }) {
         }
     };
 
-    async function getDepositedBalance(provider) {
-        const funder = await kwil.getFunder(provider);
-        const address = await provider.getSigner().getAddress();
-        return await funder.getDepositedBalance(address);
-    };
-
-    async function getUsedBalance(provider) {
+    async function getAvailableBalance(provider) {
         try {
-            const address = await provider.getSigner().getAddress();
+            const address = (await provider.getSigner()).address;
             const acct = await kwil.getAccount(address);
-            return acct.data.spent
+            return acct.data.balance;
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     };
 
-    async function setAvailableAndUsed() {
-        const provider = new Web3Provider(window.ethereum);
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
+    async function setAvailableFunds() {
+        const provider = new BrowserProvider(window.ethereum);
 
-        const used = await getUsedBalance(provider);
-        const depositFunds = await getDepositedBalance(provider);
-
-        setUsed(roundEther(used));
-        setAvailable(roundEther(depositFunds) - roundEther(used));
+        const available = await getAvailableBalance(provider);
+        setAvailable(weiToToken(available));
     }
 
     useEffect(() => {
         if(walletAddress) {
-            setAvailableAndUsed();
+            setAvailableFunds();
         }
     }, [walletAddress]);
 
@@ -121,8 +109,6 @@ export default function FundingInterface({ walletAddress }) {
                         <p className="funding-number">{available}</p> :
                         <CustomLoader />    
                     }
-                    <p className="funding-text">Used:</p>
-                    <p className="funding-number">{used}</p>
                 </div>
             }
             

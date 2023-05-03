@@ -1,26 +1,25 @@
-import { Utils } from "kwil";
 import { useState } from "react";
 import { NewBlogButton } from "../Mui-components/buttons";
 import { CustomAddIcon } from "../Mui-components/icons";
 import { BlogNameTextField } from "../Mui-components/textFields";
 import { kwil } from "../../webKwil";
-import { Web3Provider } from "@ethersproject/providers";
+import { BrowserProvider } from "ethers";
 
-export default function NewBlog({ menuUpdate, setMenuUpdate }) {
+
+export default function NewBlog({ menuUpdate, setMenuUpdate, blogs }) {
     const [newBlog, setNewBlog] = useState(false)
     const [blogName, setBlogName] = useState("")
 
     async function createBlog(name) {
-        const dbi = await kwil.selectDatabase("0xa23742526C48D90fD23b3D66B45C43c7a75df1c6", "blog_dapp");
-        const query = dbi.getQuery('add_blog');
-        query.setInput('id', Utils.UUID.v4());
-        query.setInput('blog_name', name);
-        const provider = new Web3Provider(window.ethereum);
-        await window.ethereum.request({ method: 'eth_requestAccounts' })
-        const signer = provider.getSigner();
+        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
+        let action = await kwil.getAction(dbid, "add_blog");
+        let execution = action.newInstance();
+        execution.set('$id', blogs.length + 1);
+        execution.set('$name', name);
         try {
-            let tx = query.newTx();
-            tx = await kwil.prepareTx(tx, signer);
+            const provider = new BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            let tx = await action.prepareAction(signer)
             const res = await kwil.broadcast(tx);
             console.log(res)
             setNewBlog(false)

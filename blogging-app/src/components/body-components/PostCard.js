@@ -1,55 +1,56 @@
-import { Web3Provider } from "@ethersproject/providers";
 import { useState } from "react";
 import { DeleteButton, EditButton, SubmitButton } from "../Mui-components/buttons";
 import { BlogContentInput } from "../Mui-components/textFields";
 import { kwil } from "../../webKwil";
+import { BrowserProvider } from "ethers";
 
-export default function PostCard({ post, dbIdentifier, editPost, setEditPost, currentBlog }) {
+export default function PostCard({ post, editPost, setEditPost, currentBlog }) {
     const [editMode, setEditMode] = useState(false)
     const [editValue, setEditValue] = useState(post.post_content ? post.post_content : "")
 
-    const title = post.post_title
-    const content = post.post_content
-    const timestamp = post.post_timestamp
-    const wallet = post.wallet_address
+    const title = post.post_title;
+    const content = post.post_content;
+    const timestamp = post.post_timestamp;
+    const wallet = post.wallet_address;
 
     async function editBlog(newContent) {
-        let query = dbIdentifier.getQuery("update_post")
-        query.setInput("post_content", newContent)
-        query.setInput("where_post_title", title)
-        query.setInput("where_blog", currentBlog)
+        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
+        let action = await kwil.getAction(dbid, "update_post");
+        let execution = action.newInstance();
+
+        execution.set('$content', newContent);
+        execution.set('$title', title);
+        execution.set('$blog', currentBlog);
 
         try {
-            const provider = new Web3Provider(window.ethereum);
-            await window.ethereum.request({ method: 'eth_requestAccounts' })
-            const signer = provider.getSigner();
-
-            let tx = query.newTx();
-            tx = await kwil.prepareTx(tx, signer);
+            const provider = new BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            let tx = await action.prepareAction(signer);
             const res = await kwil.broadcast(tx);
-            console.log(res)
-            setEditMode(false)
-            setEditPost(editPost + 1)
+            console.log(res);
+            setEditMode(false);
+            setEditPost(editPost + 1);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
 
     async function deleteBlog() {
-        let query = dbIdentifier.getQuery("delete_post")
-        query.setInput("where_post_title", title)
-        query.setInput("where_blog", currentBlog)
+        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
+        let action = await kwil.getAction(dbid, "delete_post");
+        let execution = action.newInstance();
+
+        execution.set('$title', title);
+        execution.set('$blog', currentBlog);
+
 
         try {
-            const provider = new Web3Provider(window.ethereum);
-            await window.ethereum.request({ method: 'eth_requestAccounts' })
-            const signer = provider.getSigner();
+            const provider = new BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
 
-            let tx = query.newTx();
-            tx = await kwil.prepareTx(tx, signer);
+            let tx = await action.prepareAction(signer);
             const res = await kwil.broadcast(tx);
             console.log(res)
-            setEditMode(false)
             setEditPost(editPost + 1)
         } catch (error) {
             console.log(error)

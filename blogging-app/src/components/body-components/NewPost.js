@@ -1,30 +1,28 @@
 import { SubmitButton } from "../Mui-components/buttons";
 import { BlogContentInput, BlogTitleInput } from "../Mui-components/textFields";
 import { kwil } from "../../webKwil";
-import { Utils } from "kwil";
-import { Web3Provider } from "@ethersproject/providers";
 import { useState } from "react";
+import { BrowserProvider } from "ethers";
 
-export default function NewPost({ walletAddress, currentBlog, newPost, setNewPost, setNewBlog }) {
+export default function NewPost({ walletAddress, currentBlog, newPost, setNewPost, setNewBlog, blogRecords }) {
     const [blogTitle, setBlogTitle] = useState("");
     const [blogContent, setBlogContent] = useState("");
 
     async function createPost(title, content) {
-        const dbi = await kwil.selectDatabase("0xa23742526C48D90fD23b3D66B45C43c7a75df1c6", "blog_dapp");
-        let query = dbi.getQuery("add_post");
-        query.setInput("id", Utils.UUID.v4());
-        query.setInput("blog", currentBlog);
-        query.setInput("post_title", title);
-        query.setInput("post_content", content);
-        query.setInput("post_timestamp", new Date().toString());
-        
-        const provider = new Web3Provider(window.ethereum);
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const signer = provider.getSigner();
+        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
+        let action = await kwil.getAction(dbid, "add_post");
+        let execution = action.newInstance();
+
+        execution.set('$id', blogRecords + 1);
+        execution.set('$blog', currentBlog);
+        execution.set('$title', title);
+        execution.set('$content', content);
+        execution.set('$timestamp', new Date().toString());
 
         try {
-            let tx = query.newTx();
-            tx = await kwil.prepareTx(tx, signer);
+            const provider = new BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            let tx = await action.prepareAction(signer);
             const res = await kwil.broadcast(tx);
             console.log(res);
             setNewPost(newPost + 1);
