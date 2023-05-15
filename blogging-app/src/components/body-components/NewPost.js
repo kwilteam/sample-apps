@@ -3,26 +3,37 @@ import { BlogContentInput, BlogTitleInput } from "../Mui-components/textFields";
 import { kwil } from "../../webKwil";
 import { useState } from "react";
 import { BrowserProvider } from "ethers";
+import { Utils } from "luke-dev";
 
 export default function NewPost({ walletAddress, currentBlog, newPost, setNewPost, setNewBlog, blogRecords }) {
     const [blogTitle, setBlogTitle] = useState("");
     const [blogContent, setBlogContent] = useState("");
 
     async function createPost(title, content) {
+        // create the action input
+        const input = new Utils.ActionInput()
+            .put('$id', blogRecords + 1)
+            .put('$blog', currentBlog)
+            .put('$title', title)
+            .put('$content', content)
+            .put('$timestamp', new Date().toString());
+        
+        // get the dbid
         const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
-        let action = await kwil.getAction(dbid, "add_post");
-        let execution = action.newInstance();
-
-        execution.set('$id', blogRecords + 1);
-        execution.set('$blog', currentBlog);
-        execution.set('$title', title);
-        execution.set('$content', content);
-        execution.set('$timestamp', new Date().toString());
 
         try {
             const provider = new BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
-            let tx = await action.prepareAction(signer);
+           
+            // build the action tx
+            const tx = await kwil
+                .actionBuilder()
+                .dbid(dbid)
+                .name("add_post")
+                .concat(input)
+                .signer(signer)
+                .buildTx();
+
             const res = await kwil.broadcast(tx);
             console.log(res);
             setNewPost(newPost + 1);

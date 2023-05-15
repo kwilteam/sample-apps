@@ -3,6 +3,7 @@ import { DeleteButton, EditButton, SubmitButton } from "../Mui-components/button
 import { BlogContentInput } from "../Mui-components/textFields";
 import { kwil } from "../../webKwil";
 import { BrowserProvider } from "ethers";
+import { Utils } from "luke-dev";
 
 export default function PostCard({ post, editPost, setEditPost, currentBlog }) {
     const [editMode, setEditMode] = useState(false);
@@ -14,18 +15,28 @@ export default function PostCard({ post, editPost, setEditPost, currentBlog }) {
     const wallet = post.wallet_address;
 
     async function editBlog(newContent) {
-        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
-        let action = await kwil.getAction(dbid, "update_post");
-        let execution = action.newInstance();
+        // create the action input
+        const input = new Utils.ActionInput()
+            .put('$content', newContent)
+            .put('$title', title)
+            .put('$blog', currentBlog);
 
-        execution.set('$content', newContent);
-        execution.set('$title', title);
-        execution.set('$blog', currentBlog);
+        // get the dbid
+        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
 
         try {
             const provider = new BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
-            let tx = await action.prepareAction(signer);
+            
+            // build the action tx
+            const tx = await kwil
+                .actionBuilder()
+                .dbid(dbid)
+                .name("update_post")
+                .concat(input)
+                .signer(signer)
+                .buildTx();
+
             const res = await kwil.broadcast(tx);
             console.log(res);
             setEditMode(false);
@@ -36,19 +47,27 @@ export default function PostCard({ post, editPost, setEditPost, currentBlog }) {
     }
 
     async function deleteBlog() {
+        // create the action input
+        const input = Utils.ActionInput.of()
+            .put('$title', title)
+            .put('$blog', currentBlog);
+
+        // get the dbid
         const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
-        let action = await kwil.getAction(dbid, "delete_post");
-        let execution = action.newInstance();
-
-        execution.set('$title', title);
-        execution.set('$blog', currentBlog);
-
 
         try {
             const provider = new BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
 
-            let tx = await action.prepareAction(signer);
+            // build the action tx
+            let tx = await kwil
+                .actionBuilder()
+                .dbid(dbid)
+                .name("delete_post")
+                .concat(input)
+                .signer(signer)
+                .buildTx();
+
             const res = await kwil.broadcast(tx);
             console.log(res)
             setEditPost(editPost + 1)
