@@ -3,13 +3,16 @@ import { BlogContentInput, BlogTitleInput } from "../Mui-components/textFields";
 import { kwil } from "../../webKwil";
 import { useState } from "react";
 import { BrowserProvider } from "ethers";
-import { Utils } from "luke-dev";
+import { Utils } from "kwil";
 
 export default function NewPost({ walletAddress, currentBlog, newPost, setNewPost, setNewBlog, blogRecords }) {
     const [blogTitle, setBlogTitle] = useState("");
     const [blogContent, setBlogContent] = useState("");
 
     async function createPost(title, content) {
+        // get the dbid
+        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
+
         // create the action input
         const input = new Utils.ActionInput()
             .put('$id', blogRecords + 1)
@@ -17,9 +20,6 @@ export default function NewPost({ walletAddress, currentBlog, newPost, setNewPos
             .put('$title', title)
             .put('$content', content)
             .put('$timestamp', new Date().toString());
-        
-        // get the dbid
-        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
 
         try {
             const provider = new BrowserProvider(window.ethereum);

@@ -4,21 +4,22 @@ import { CustomAddIcon } from "../Mui-components/icons";
 import { BlogNameTextField } from "../Mui-components/textFields";
 import { kwil } from "../../webKwil";
 import { BrowserProvider } from "ethers";
-import { Utils } from "luke-dev";
+import { Utils } from "kwil";
 
 export default function NewBlog({ menuUpdate, setMenuUpdate, blogs }) {
     const [newBlog, setNewBlog] = useState(false)
     const [blogName, setBlogName] = useState("")
 
     async function createBlog(name) {
+
+        // get the dbid
+        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
+     
         // create the action input
         const input = new Utils.ActionInput()
             .put('$id', blogs.length + 1)
             .put('$name', name);
 
-        // get the dbid
-        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
-     
         try {
             const provider = new BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
