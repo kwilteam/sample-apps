@@ -3,9 +3,8 @@
 This repository provides a sample Kwil Extension that can be used with any ERC20 contract.
 
 ## Full tutorial
-A full video tutorial walking through this repository can be found [here](https://www.youtube.com/watch?v=yRek7O5h7qM&t=2s).
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/yRek7O5h7qM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+A full video tutorial walking through this repository can be found [here](https://www.youtube.com/watch?v=yRek7O5h7qM&t=2s).
 
 ## QuickStart
 
