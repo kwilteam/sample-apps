@@ -1,41 +1,35 @@
-import { SubmitButton } from "../Mui-components/buttons";
-import { BlogContentInput, BlogTitleInput } from "../Mui-components/textFields";
+import { SubmitButton } from "../../utils/Mui-components/buttons";
+import { BlogContentInput, BlogTitleInput } from "../../utils/Mui-components/textFields";
 import { kwil } from "../../webKwil";
 import { useState } from "react";
-import { BrowserProvider } from "ethers";
-import { Utils } from "kwil";
 
-export default function NewPost({ walletAddress, currentBlog, newPost, setNewPost, setNewBlog, blogRecords }) {
+export default function NewPost({ kwilSigner, currentBlog, newPost, setNewPost, setNewBlog, blogRecords }) {
     const [blogTitle, setBlogTitle] = useState("");
     const [blogContent, setBlogContent] = useState("");
 
-    async function createPost(title, content) {
+    async function createPost(title, content, kSigner) {
         // get the dbid
-        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
-
-        // create the action input
-        const input = new Utils.ActionInput()
-            .put('$id', blogRecords + 1)
-            .put('$blog', currentBlog)
-            .put('$title', title)
-            .put('$content', content)
-            .put('$timestamp', new Date().toString());
+        const dbid = kwil.getDBID(kSigner.identifier, "blog_dapp");
 
         try {
-            const provider = new BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
-           
-            // build the action tx
-            const tx = await kwil
-                .actionBuilder()
-                .dbid(dbid)
-                .name("add_post")
-                .concat(input)
-                .signer(signer)
-                .buildTx();
-
-            const res = await kwil.broadcast(tx);
+            // execute the transaction on the database
+            const res = await kwil.execute({
+                dbid,
+                action: "add_post",
+                inputs: [{
+                    $id: blogRecords + 1,
+                    $blog: currentBlog,
+                    $title: title,
+                    $content: content,
+                    $timestamp: new Date().toString()
+                }],
+                description: "Sign to create new post!"
+            }, kSigner, true);
+          
+            // log the result
             console.log(res);
+
+            // trigger post refresh
             setNewPost(newPost + 1);
             setNewBlog(true);
         } catch (error) {
@@ -44,14 +38,14 @@ export default function NewPost({ walletAddress, currentBlog, newPost, setNewPos
         }
     };
 
-    return(
+    return (
         <div className="blog-post">
             <BlogTitleInput
                 placeholder="Title"
                 onChange={(e) => setBlogTitle(e.target.value)}
                 value={blogTitle}
             />
-            <BlogContentInput 
+            <BlogContentInput
                 multiline
                 minRows={4}
                 placeholder="Write your blog post here..."
@@ -59,7 +53,7 @@ export default function NewPost({ walletAddress, currentBlog, newPost, setNewPos
                 value={blogContent}
             />
             <SubmitButton
-                onClick={() => createPost(blogTitle, blogContent)}
+                onClick={() => createPost(blogTitle, blogContent, kwilSigner)}
             >
                 Submit
             </SubmitButton>

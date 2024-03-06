@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { DeleteButton, EditButton, SubmitButton } from "../Mui-components/buttons";
-import { BlogContentInput } from "../Mui-components/textFields";
+import { DeleteButton, EditButton, SubmitButton } from "../../utils/Mui-components/buttons";
+import { BlogContentInput } from "../../utils/Mui-components/textFields";
 import { kwil } from "../../webKwil";
-import { BrowserProvider } from "ethers";
-import { Utils } from "kwil";
 
-export default function PostCard({ post, editPost, setEditPost, currentBlog }) {
+export default function PostCard({ post, editPost, setEditPost, currentBlog, kwilSigner }) {
     const [editMode, setEditMode] = useState(false);
     const [editValue, setEditValue] = useState(post.post_content ? post.post_content : "");
 
@@ -14,31 +12,37 @@ export default function PostCard({ post, editPost, setEditPost, currentBlog }) {
     const timestamp = post.post_timestamp;
     const wallet = post.wallet_address;
 
-    async function editBlog(newContent) {
-        // get the dbid
-        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
+    async function editBlog(newContent, currentBlog, title, kSigner) {
+        if (!newContent) {
+            window.alert("Please text into the post");
+            return;
+        }
 
-        // create the action input
-        const input = new Utils.ActionInput()
-            .put('$content', newContent)
-            .put('$title', title)
-            .put('$blog', currentBlog);
+        if (!kSigner) {
+            window.alert("Please connect your wallet");
+            return;
+        }
+
+        // get the dbid
+        const dbid = kwil.getDBID(kSigner.identifier, "blog_dapp");
 
         try {
-            const provider = new BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
-            
-            // build the action tx
-            const tx = await kwil
-                .actionBuilder()
-                .dbid(dbid)
-                .name("update_post")
-                .concat(input)
-                .signer(signer)
-                .buildTx();
+            // execute the transaction on the database
+            const res = await kwil.execute({
+                dbid,
+                action: "update_post",
+                inputs: [{
+                    $content: newContent,
+                    $title: title,
+                    $blog: currentBlog
+                }],
+                description: "Sign to update post!"
+            }, kSigner, true);
 
-            const res = await kwil.broadcast(tx);
+            // log the result
             console.log(res);
+
+            // reset the edit mode and set the edit post to refresh
             setEditMode(false);
             setEditPost(editPost + 1);
         } catch (error) {
@@ -46,37 +50,33 @@ export default function PostCard({ post, editPost, setEditPost, currentBlog }) {
         }
     }
 
-    async function deleteBlog() {
+    async function deleteBlog(title, currentBlog, kSigner) {
         // get the dbid
-        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
-
-        // create the action input
-        const input = Utils.ActionInput.of()
-            .put('$title', title)
-            .put('$blog', currentBlog);
+        const dbid = kwil.getDBID(kSigner.identifier, "blog_dapp");
 
         try {
-            const provider = new BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
+            // execute the transaction on the database
+            const res = await kwil.execute({
+                dbid,
+                action: "delete_post",
+                inputs: [{
+                    $title: title,
+                    $blog: currentBlog
+                }],
+                description: "Sign to delete post!"
+            }, kSigner, true);
 
-            // build the action tx
-            const tx = await kwil
-                .actionBuilder()
-                .dbid(dbid)
-                .name("delete_post")
-                .concat(input)
-                .signer(signer)
-                .buildTx();
-
-            const res = await kwil.broadcast(tx);
+            // log the result
             console.log(res);
+
+            // set the edit post to refresh
             setEditPost(editPost + 1);
         } catch (error) {
             console.log(error);
         }
     }
-    
-    return(
+
+    return (
         <div className="blog-post">
             <h3>{title}</h3>
             <div className="author-block">
@@ -94,7 +94,7 @@ export default function PostCard({ post, editPost, setEditPost, currentBlog }) {
                     minRows={4}
                 />
             }
-            {!editMode ? 
+            {!editMode ?
                 <div className="edit-buttons">
                     <EditButton
                         onClick={() => setEditMode(true)}
@@ -102,13 +102,13 @@ export default function PostCard({ post, editPost, setEditPost, currentBlog }) {
                         Edit
                     </EditButton>
                     <DeleteButton
-                        onClick={() => deleteBlog()}
+                        onClick={() => deleteBlog(title, currentBlog, kwilSigner)}
                     >
                         Delete
                     </DeleteButton>
                 </div> :
                 <SubmitButton
-                    onClick={() => editBlog(editValue)}
+                    onClick={() => editBlog(editValue, currentBlog, title, kwilSigner)}
                 >
                     Submit
                 </SubmitButton>
