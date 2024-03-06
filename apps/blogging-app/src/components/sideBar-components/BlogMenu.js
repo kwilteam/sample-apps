@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { CustomMenuItem, CustomSelect } from "../Mui-components/menus";
+import { CustomMenuItem, CustomSelect } from "../../utils/Mui-components/menus";
 import { kwil } from "../../webKwil";
 
-export default function BlogMenu({ walletAddress, setCurrentBlog, menuUpdate, blogs, setBlogs }) {
+export default function BlogMenu({ kwilSigner, setCurrentBlog, menuUpdate, blogs, setBlogs }) {
     const [selectedBlog, setSelectedBlog] = useState("");
 
     function organizeBlogName(input) {
@@ -15,17 +15,22 @@ export default function BlogMenu({ walletAddress, setCurrentBlog, menuUpdate, bl
     };
 
     async function listBlogs() {
-        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
+        // get the dbid
+        const dbid = kwil.getDBID(kwilSigner.identifier, "blog_dapp");
+
+        // get the list of blogs with a select query
         const blogList = await kwil.selectQuery(dbid, "SELECT blog_name FROM blogs");
+
+        // set the blogs state
         setBlogs(organizeBlogName(blogList.data));
     };
 
     useEffect(() => {
-        if(walletAddress) {
+        if(kwilSigner) {
             listBlogs();
         }
         
-    }, [walletAddress, menuUpdate]);
+    }, [kwilSigner, menuUpdate]);
 
     return(
         <div className="blog-menu">

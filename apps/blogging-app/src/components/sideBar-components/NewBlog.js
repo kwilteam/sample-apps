@@ -1,40 +1,43 @@
 import { useState } from "react";
-import { NewBlogButton } from "../Mui-components/buttons";
-import { CustomAddIcon } from "../Mui-components/icons";
-import { BlogNameTextField } from "../Mui-components/textFields";
+import { NewBlogButton } from "../../utils/Mui-components/buttons";
+import { CustomAddIcon } from "../../utils/Mui-components/icons";
+import { BlogNameTextField } from "../../utils/Mui-components/textFields";
 import { kwil } from "../../webKwil";
-import { BrowserProvider } from "ethers";
-import { Utils } from "kwil";
 
-export default function NewBlog({ menuUpdate, setMenuUpdate, blogs }) {
+export default function NewBlog({ kwilSigner, menuUpdate, setMenuUpdate, blogs }) {
     const [newBlog, setNewBlog] = useState(false)
     const [blogName, setBlogName] = useState("")
 
-    async function createBlog(name) {
+    async function createBlog(name, blogs, kSigner) {
+        if (!name) {
+            window.alert("Please enter a blog name");
+            return;
+        }
+
+        if (!kSigner) {
+            window.alert("Please connect your wallet");
+            return;
+        }
 
         // get the dbid
-        const dbid = kwil.getDBID("0xdB8C53Cd9be615934da491A7476f3f3288d98fEb", "blog_dapp");
-     
-        // create the action input
-        const input = new Utils.ActionInput()
-            .put('$id', blogs.length + 1)
-            .put('$name', name);
+        const dbid = kwil.getDBID(kSigner.identifier, "blog_dapp");
 
         try {
-            const provider = new BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
-
-            // build the action tx
-            let tx = await kwil
-                .actionBuilder()
-                .dbid(dbid)
-                .name("add_blog")
-                .concat(input)
-                .signer(signer)
-                .buildTx();
-
-            const res = await kwil.broadcast(tx);
+            // execute the transaction on the database
+            const res = await kwil.execute({
+                dbid,
+                action: "add_blog",
+                inputs: [{
+                    $id: blogs.length + 1,
+                    $name: name
+                }],
+                description: "Sign to create new blog!"
+            }, kSigner, true);
+            
+            // log the result
             console.log(res);
+
+            // reset the blog name and set new blog to false
             setNewBlog(false);
             setMenuUpdate(menuUpdate + 1);
         } catch (error) {
@@ -59,7 +62,7 @@ export default function NewBlog({ menuUpdate, setMenuUpdate, blogs }) {
                         placeholder="Blog Name"
                     />
                     <NewBlogButton
-                        onClick={() => createBlog(blogName)}
+                        onClick={() => createBlog(blogName, blogs, kwilSigner)}
                     >
                         Create
                     </NewBlogButton>

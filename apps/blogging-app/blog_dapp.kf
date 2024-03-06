@@ -14,14 +14,14 @@ table posts {
     wallet_address text notnull
 }
 
-action add_blog ($id, $name) private {
+action add_blog ($id, $name) public owner {
     INSERT INTO blogs
-    VALUES ($id, $name)
+    VALUES ($id, $name);
 }
 
 action add_post ($id, $blog, $title, $content, $timestamp) public {
     INSERT INTO posts
-    VALUES ($id, $blog, $title, $content, $timestamp, @caller)
+    VALUES ($id, $blog, $title, $content, $timestamp, @caller);
 }
 
 action update_post ($content, $title, $blog) public {
@@ -29,12 +29,18 @@ action update_post ($content, $title, $blog) public {
     SET post_content = $content
     WHERE post_title = $title
         AND blog = $blog
-        AND wallet_address = @caller
+        AND wallet_address = @caller;
 }
 
 action delete_post ($title, $blog) public {
     DELETE FROM posts
     WHERE post_title = $title
         AND blog = $blog
-        AND wallet_address = @caller
+        AND wallet_address = @caller;
+}
+                    
+action get_posts ($current_blog) public view {
+    SELECT post_title, post_content, post_timestamp, wallet_address
+    FROM posts
+    WHERE blog = $current_blog;
 }
